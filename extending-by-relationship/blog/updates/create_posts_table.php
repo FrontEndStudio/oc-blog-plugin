@@ -8,8 +8,7 @@ class CreatePostsTable extends Migration
 
     public function up()
     {
-        Schema::create('fes_blog_posts', function($table)
-        {
+        Schema::create('fes_blog_posts', function ($table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('post_id')->unsigned()->index();
@@ -22,5 +21,4 @@ class CreatePostsTable extends Migration
     {
         Schema::dropIfExists('fes_blog_posts');
     }
-
 }

@@ -30,11 +30,11 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        PostModel::extend(function($model) {
+        PostModel::extend(function ($model) {
             $model->hasOne['post'] = ['Fes\Blog\Models\Post'];
         });
 
-        PostsController::extendFormFields(function($form, $model, $context) {
+        PostsController::extendFormFields(function ($form, $model, $context) {
 
             if (! $model instanceof PostModel) {
                 return;
@@ -109,5 +109,4 @@ class Plugin extends PluginBase
             ],
         ];
     }
-
 }

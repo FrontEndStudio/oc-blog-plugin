@@ -45,5 +45,4 @@ class Post extends Model
         return $blog;
 
     }
-
 }
