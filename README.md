@@ -19,7 +19,21 @@ Read more about the [Blog Plugin](https://octobercms.com/plugin/rainlab-blog)
 ## How to use 
 
 - Under plugins create a directory named 'fes'
-- Either clone 'extending-by-relationship/blog' or 'extending-direct-structure/blog' to 'plugins/fes/blog' 
+
+```
+git clone --depth 1  https://github.com/FrontEndStudio/oc-blog-plugin blog
+cd blog
+git filter-branch --prune-empty --subdirectory-filter extending-by-relationship/blog HEAD
+```
+
+- OR 
+
+```
+git clone --depth 1  https://github.com/FrontEndStudio/oc-blog-plugin blog
+cd blog
+git filter-branch --prune-empty --subdirectory-filter extending-direct-structure/blog HEAD
+```
+
 - Update the new or adjusted table like: ~ php artisan plugin:refresh Fes:Blog
 
 
