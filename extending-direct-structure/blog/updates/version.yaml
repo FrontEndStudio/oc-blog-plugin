@@ -1,0 +1,4 @@
+1.0.1: First version of Blog
+1.0.2:
+    - Update post table
+    - add_post_fields_to_post_table.php
