@@ -66,7 +66,6 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
 
         return [
             'Fes\Blog\Components\MyComponent' => 'myComponent',
@@ -80,7 +79,6 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
 
         return [
             'fes.blog.some_permission' => [

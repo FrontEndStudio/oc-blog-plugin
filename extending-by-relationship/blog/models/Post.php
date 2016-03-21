@@ -33,7 +33,6 @@ class Post extends Model
     public static function getFromPost($post)
     {
 
-
         if ($post->post) {
             return $post->blog;
         }
@@ -43,6 +42,6 @@ class Post extends Model
         $blog->save();
         $post->post = $blog;
         return $blog;
-
+        
     }
 }
