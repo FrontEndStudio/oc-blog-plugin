@@ -1,6 +1,6 @@
 <?php return [
     'plugin' => [
-        'name' => 'Blog',
+        'name' => 'Blog (extension)',
         'description' => 'Extension of blogging platform'
     ],
     'posts' => [
