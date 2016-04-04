@@ -17,7 +17,7 @@ class Plugin extends PluginBase
     public $require = ['RainLab.Blog'];
 
     /**
-     * Returns information about this plugin.
+     * Returns information about the plugin.
      *
      * @return array
      */
@@ -26,11 +26,17 @@ class Plugin extends PluginBase
         return [
             'name'        => Lang::get('fes.blog::lang.plugin.name'),
             'description' => Lang::get('fes.blog::lang.plugin.description'),
-            'author'      => 'Fes',
-            'icon'        => 'icon-leaf'
+            'author'      => 'FrontEndStudio',
+            'icon'        => 'icon-pencil',
+            'homepage'    => 'https://github.com/FrontEndStudio/oc-blog-plugin'
         ];
     }
 
+    /**
+     * Boot method, called right before the request route.
+     *
+     * @return void
+     */
     public function boot()
     {
 
@@ -57,16 +63,30 @@ class Plugin extends PluginBase
     }
 
     /**
-     * Registers any front-end components implemented in this plugin.
+     * Register andy front-end components use by this plugin.
      *
      * @return array
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
 
         return [
-            'Fes\Blog\Components\MyComponent' => 'myComponent',
+            'Fes\Blog\Components\Post' => 'FesPost'
+        ];
+
+    }
+
+    /**
+     * Registers any front-end snippets implemented in this plugin.
+     *
+     * @return array
+     */
+    public function registerPageSnippets()
+    {
+        return [
+            'RainLab\Blog\Components\Categories' => 'categories',
+            'RainLab\Blog\Components\Post' => 'post',
+            'RainLab\Blog\Components\Posts' => 'posts'
         ];
     }
 
@@ -100,7 +120,7 @@ class Plugin extends PluginBase
             'blog' => [
                 'label'       => 'Blog',
                 'url'         => Backend::url('fes/blog/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'icon'        => 'icon-pencil',
                 'permissions' => ['fes.blog.*'],
                 'order'       => 500,
             ],
