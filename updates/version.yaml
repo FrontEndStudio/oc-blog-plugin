@@ -2,3 +2,6 @@
 1.0.2:
     - Update post table
     - add_post_fields_to_post_table.php
+1.0.3:
+    - Database maintenance. Updated all timestamp columns to be nullable.
+    - update_timestamp_nullable.php

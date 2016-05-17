@@ -48,7 +48,7 @@ class Plugin extends PluginBase
 
             $form->addSecondaryTabFields([
                 'results' => [
-                    'label' => 'Results',
+                    'label' => Lang::get('fes.blog::lang.posts.tab_results'),
                     'type' => 'markdown',
                     'size' => 'huge',
                     'mode' => 'split',
@@ -71,7 +71,7 @@ class Plugin extends PluginBase
     {
 
         return [
-            'Fes\Blog\Components\Post' => 'FesPost'
+            'Fes\Blog\Components\Post' => 'fesPost'
         ];
 
     }
@@ -98,9 +98,11 @@ class Plugin extends PluginBase
     public function registerPermissions()
     {
 
+        return [];
+
         return [
             'fes.blog.some_permission' => [
-                'tab' => 'Blog',
+                'tab' => Lang::get('fes.blog::lang.plugin.name'),
                 'label' => 'Some permission'
             ],
         ];

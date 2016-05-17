@@ -3,9 +3,99 @@
 {% set prev = __SELF__.prev %}
 {% set next = __SELF__.next %}
 
+{% set debug %}
+
+    {% for category in categories %}
+        {% if loop.first %}
+            <pre>
+        {% endif %}
+
+
+        id: {{ category.id }}
+        name: {{ category.name }}
+        slug: {{ category.slug }}
+
+        {% if loop.last %}
+            </pre>
+        {% endif %}
+
+    {% endfor %}
+
+    <hr>
+
+    {% for post in posts %}
+        {% if loop.first %}
+            <pre>
+        {% endif %}
+
+                id: {{ post.id }}
+                title: {{ post.title }}
+                slug: {{ post.slug }}
+
+        {% if loop.last %}
+            </pre>
+        {% endif %}
+
+    {% endfor %}
+
+
+{% endset %}
+
 <h1>{{ post.title }}</h1>
 
-<div class="content">{{ post.content_html|raw }}</div>
+{% if post.excerpt %}
+    <p><i>{{ post.excerpt }}</i></p><br>
+{% endif %}
+
+{% if post.content %}
+    {{ post.content_html|md }}
+    <div class="spacer"><hr></div>
+{% endif %}
+
+{% if post.results %}
+    <div class="uitslagen">{{ post.results|md }}</div>
+{% endif %}
+
+<div class="spacer"></div>
+
+<ul class="pager">
+
+    {% if prev.url %}
+        <li class="pager--left">
+            <a href="{{ prev.url }}">Vorig verslag</a>
+        </li>
+    {% else %}
+        <li class="pager--left-empty">&nbsp;</li>
+    {% endif %}
+
+    {% if post.categories.count %}
+        <li class="pager--center">
+            {% for category in post.categories %}
+                <a href="{{ category.url }}">Terug naar {{ category.name | lower }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </li>
+    {% else %}
+        <li class="pager--center">&nbsp;</li>
+    {% endif %}
+
+    {% if next.url %}
+        <li class="pager--right">
+            <a href="{{ next.url }}">Volgend verslag</a>
+        </li>
+    {% else %}
+        <li class="pager--right-empty">&nbsp;</li>
+    {% endif %}
+
+</ul>
+
+{% set debug %}
+    <h2>published_at: {{ post.published_at }}</h2>
+    <h2>published: {{ post.published }}</h2>
+    <h3>{{ post.url }}</h3>
+{% endset %}
+
+
+{% set debug %}
 
 {% if post.featured_images.count %}
     <div class="featured-images text-center">
@@ -31,28 +121,4 @@
     on {{ post.published_at|date('M d, Y') }}
 </p>
 
-<hr>
-
-<table border="1" padding="10" spacing="10">
-    <tr>
-        <td style="text-align: left;" width="33%">
-{% if prev.url %}
-    <a href="{{ prev.url }}" style="color: green;">{{ prev.title }}</a>
-{% else %}
-    <a href="" style="color: red;">&lt;&lt;</a>
-{% endif %}
-        </td>
-        <td style="text-align: center;" width="33%">
-<a href="#">| Overzicht |</a>
-        </td>
-        <td style="text-align: right;" width="33%">
-    {% if next.url %}
-        <a href="{{ next.url }}" style="color: green;">{{ next.title }}</a>
-    {% else %}
-        <a href="" style="color: red;">&gt;&gt;</a>
-    {% endif %}
-        </td>
-    </tr>
-</table>
-
-<hr>
+{% endset %}

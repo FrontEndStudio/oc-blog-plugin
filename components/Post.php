@@ -2,11 +2,13 @@
 
 namespace Fes\Blog\Components;
 
+use Db;
 use Cms\Classes\ComponentBase;
 use Cms\Classes\Page;
 
 use RainLab\Blog\Components\Post as RainLabPost;
 use RainLab\Blog\Models\Post as BlogPost;
+use RainLab\Blog\Models\Category as BlogCategory;
 
 /**
  * Class Post
@@ -31,8 +33,47 @@ class Post extends RainLabPost
     protected function loadPost()
     {
 
-        $post = parent::loadPost();
+        $slug = $this->property('slug');
         $postPage = $this->property('postPage');
+        $orderBy = $this->getOrderBy($this->property('sortOrder'));
+
+        $slugs = BlogCategory::lists('slug');
+
+        // get the first blog post containing the :slug (category.slug)
+        // OR get the blog post containing the :slug (blog.slug)
+
+        if (in_array($slug, array_values($slugs))) {
+
+            $category = BlogCategory::where('slug', $slug)->first();
+
+            if ($orderBy[1] == 'desc') {
+                $post = $category
+                        ->posts
+                        ->sortByDesc($orderBy[0])
+                        ->first();
+            } else {
+                $post = $category
+                        ->posts
+                        ->sortBy($orderBy[0])
+                        ->first();
+            }
+
+        } else {
+
+            $post = BlogPost::isPublished()
+                    ->where('slug', $slug)
+                    ->orderBy($orderBy[0], $orderBy[1])
+                    ->first();
+        }
+
+        /*
+         * Add a "url" helper attribute for linking to each category
+         */
+        if ($post && $post->categories->count()) {
+            $post->categories->each(function ($category) {
+                $category->setUrl($this->categoryPage, $this->controller);
+            });
+        }
 
         if ($post instanceof BlogPost) {
             $post->setUrl($postPage, $this->controller);
@@ -40,11 +81,54 @@ class Post extends RainLabPost
 
         $this->post = $post;
 
-        $this->prev = $this->page['prev'] = $this->getPrevPost();
-        $this->next = $this->page['next'] = $this->getNextPost();
+        if (count($this->post)) {
+            $this->prev = $this->page['prev'] = $this->getPrevPost($orderBy);
+            $this->next = $this->page['next'] = $this->getNextPost($orderBy);
+        }
 
         return $post;
     }
+
+    /**
+     * getSortOrder by checking the allowedSortingOptions
+     *
+     * @return array
+     */
+    public function getOrderBy($sort)
+    {
+
+        $orderBy = array('published_at', 'desc');
+
+        if (!is_array($sort)) {
+            $sort = [$sort];
+        }
+
+        foreach ($sort as $_sort) {
+
+            if (in_array($_sort, array_keys(BlogPost::$allowedSortingOptions))) {
+                $parts = explode(' ', $_sort);
+
+                if (count($parts) < 2) {
+                    array_push($parts, 'desc');
+                }
+
+                list($sortField, $sortDirection) = $parts;
+
+                if ($sortField == 'random') {
+                    $sortField = DB::raw('RAND()');
+                }
+
+                $orderBy[0] = $sortField;
+                $orderBy[1] = $sortDirection;
+
+            }
+
+        }
+
+        return $orderBy;
+
+    }
+
 
     /**
      * Override of original method
@@ -65,6 +149,12 @@ class Post extends RainLabPost
                     'type'        => 'dropdown',
                     'default'     => 'blog/post',
                     'group'       => 'Links',
+                ],
+                'sortOrder' => [
+                    'title'       => 'rainlab.blog::lang.settings.posts_order',
+                    'description' => 'rainlab.blog::lang.settings.posts_order_description',
+                    'type'        => 'dropdown',
+                    'default'     => 'published_at desc'
                 ]
             ]
         );
@@ -84,17 +174,36 @@ class Post extends RainLabPost
     }
 
     /**
-     * Retrieve the nextPost
+     * Retrieve the sortOrder properties
+     *
+     * @return string
+     */
+    public function getSortOrderOptions()
+    {
+        return BlogPost::$allowedSortingOptions;
+    }
+
+    /**
+     * Retrieve the prevPost
      *
      * @return mixed
      */
-    public function getNextPost()
+    public function getPrevPost($orderBy)
     {
 
-        $id = $this->post->id;
+        $sortValue = $this->post->toArray()[$orderBy[0]];
         $postPage = $this->property('postPage');
 
-        $post = BlogPost::isPublished()->where('id', '>', $id)->first();
+        if ($orderBy[1] == 'asc') {
+            $sortDirection = 'desc';
+        } else {
+            $sortDirection = 'asc';
+        }
+
+        $post = BlogPost::isPublished()
+                ->where($orderBy[0], '>', $sortValue)
+                ->orderBy($orderBy[0], $sortDirection)
+                ->first();
 
         if ($post instanceof BlogPost) {
             $post->setUrl($postPage, $this->controller);
@@ -104,17 +213,20 @@ class Post extends RainLabPost
     }
 
     /**
-     * Retrieve the prevPost
+     * Retrieve the nextPost
      *
      * @return mixed
      */
-    public function getPrevPost()
+    public function getNextPost($orderBy)
     {
 
-        $id = $this->post->id;
+        $sortValue = $this->post->toArray()[$orderBy[0]];
         $postPage = $this->property('postPage');
 
-        $post = BlogPost::isPublished()->where('id', '<', $id)->first();
+        $post = BlogPost::isPublished()
+                ->where($orderBy[0], '<', $sortValue)
+                ->orderBy($orderBy[0], $orderBy[1])
+                ->first();
 
         if ($post instanceof BlogPost) {
             $post->setUrl($postPage, $this->controller);
